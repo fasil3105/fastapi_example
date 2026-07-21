@@ -19,7 +19,7 @@ class Campaign(SQLModel, table=True):
     campaign_id : int | None = Field(default= None,primary_key = True)
     name :str = Field(index = True)
     due_date : datetime | None = Field(default= None,index = True)
-    created_at : datetime = Field(default_factory =  datetime.now, nullable = True, index = True)
+    created_at : datetime = Field(default_factory =  datetime.now,  index = True)
 
 
 class CampaignCreate(SQLModel):
@@ -113,6 +113,8 @@ async def delete_campaign(id:int,session: SessionDep):
         raise HTTPException(status_code = 404)
     session.delete(data)
     session.commit()
+
+
 
 
 
