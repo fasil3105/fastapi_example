@@ -121,15 +121,4 @@ async def delete_campaign(id:int,session: SessionDep):
 
 
     
-# @app.delete("/campaigns/{id}")
-# async def delete_campaign(id:int):
-
-#     for index,item in enumerate(data):
-
-#         if item.get("campaign_id") == id:
-            
-            
-#             data.pop(index)
-#             return Response(status_code = 204)
-#     raise HTTPException(status_code = 404)
 

@@ -5,9 +5,9 @@ import uuid
 from fastapi import HTTPException, UploadFile
 from pypdf import PdfReader
 from fastapi import APIRouter
-from file_processing_api.app.core.config import ALLOWED_EXTENSION, EXTENSION_TO_MIME, MAGIC_BYTES, MAX_FILE_SIZE, UPLOAD_FOLDER
-from file_processing_api.app.db.database import SessionDep
-from file_processing_api.app.models.file import FileMetadata
+from app.core.config import ALLOWED_EXTENSION, EXTENSION_TO_MIME, MAGIC_BYTES, MAX_FILE_SIZE, UPLOAD_FOLDER
+from app.db.database import SessionDep
+from app.models.file import FileMetadata
 
 router = APIRouter()
 

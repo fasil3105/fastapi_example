@@ -1,5 +1,5 @@
-from pydantic import Field
-from sqlmodel import SQLModel
+
+from sqlmodel import SQLModel, Field
 
 
 class FileMetadata(SQLModel, table=True):

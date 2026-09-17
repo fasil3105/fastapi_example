@@ -21,19 +21,19 @@ from pypdf import PdfReader
 from sqlalchemy import create_engine
 from sqlmodel import SQLModel, Field, Session
 
-from file_processing_api.app.db.database import create_db_and_tables
-from file_processing_api.app.routes import auth, files
+from app.db.database import create_db_and_tables
+from app.routes import auth, files
 
 
 @asynccontextmanager
 async def lifespan(app : FastAPI):
     create_db_and_tables()
+    yield
 
-app = FastAPI()
+app = FastAPI(lifespan= lifespan)
 
-
-app.include_router(auth.router)
-app.include_router(files.router)
+app.include_router(auth.router, prefix="/auth")
+app.include_router(files.router, prefix ="/files" )
 
 
 
