@@ -1,43 +1,18 @@
-#  Upload
-#    ↓
-# Is extension allowed?
-#    ↓
-# Is MIME type allowed?
-#    ↓
-# Is size within limit?
-#    ↓
-# YES → Save
-# NO  → Reject 
-
-import uuid
-from fastapi import FastAPI, File, HTTPException, UploadFile
 from pathlib import Path
-from PIL import Image
+from tkinter import Image
+import uuid
+
+from fastapi import HTTPException, UploadFile
 from pypdf import PdfReader
+from fastapi import APIRouter
+from file_processing_api.app.core.config import ALLOWED_EXTENSION, EXTENSION_TO_MIME, MAGIC_BYTES, MAX_FILE_SIZE, UPLOAD_FOLDER
+from file_processing_api.app.db.database import SessionDep
+from file_processing_api.app.models.file import FileMetadata
 
+router = APIRouter()
 
-app = FastAPI()
-ALLOWED_EXTENSION = {".pdf", ".jpg", ".jpeg", ".png"}
-
-EXTENSION_TO_MIME = {
-    ".pdf": "application/pdf",
-    ".jpg": "image/jpeg",
-    ".jpeg": "image/jpeg",
-    ".png": "image/png",
-}
-
-MAGIC_BYTES = {
-"application/pdf": b"%PDF",
-"image/jpeg": b"\xff\xd8\xff",
-"image/png": b"\x89PNG\r\n\x1a\n",
-}
-
-UPLOAD_FOLDER = Path("uploads")
-UPLOAD_FOLDER.mkdir(exist_ok=True)
-MAX_FILE_SIZE = 2 * 1024 * 1024
-
-@app.post("/uploadfile/")
-async def create_upload_file(file : UploadFile):
+@router.post("/uploadfile/")
+async def create_upload_file(file : UploadFile, session: SessionDep):
 
     extension =  Path(file.filename).suffix.lower()
 
@@ -82,6 +57,14 @@ async def create_upload_file(file : UploadFile):
         if file_type == "application/pdf":
             reader = PdfReader(file.file)
 
+            # Make sure PDF has at least one page
+            if len(reader.pages) == 0:
+                raise ValueError("PDF contains no pages")
+
+            # Access each page to force parsing
+            for page in reader.pages:
+                page.extract_text()
+
         elif file_type in {"image/jpeg", "image/png"}:
             image = Image.open(file.file)
             image.verify()
@@ -99,15 +82,22 @@ async def create_upload_file(file : UploadFile):
         while chunk := await file.read(1024 * 1024):
             f.write(chunk)
 
+            file_metadata = FileMetadata(
+            original_filename=file.filename,
+            stored_filename=new_filename,
+            file_type=file_type,
+            file_size=file_size,
+            status="VALID"
+        )
+
+            session.add(file_metadata)
+            session.commit()
+            session.refresh(file_metadata)
+            
+
         return {"Allowed": {
                 "File_extension" : extension,
-                "MIME_type" : mime_type,
+                "MIME_type" : file_type,
                 "File_Size" : file_size
                 }
         }
-
-        
-
-    
-
- 
