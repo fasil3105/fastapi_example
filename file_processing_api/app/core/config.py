@@ -1,5 +1,12 @@
 
 from pathlib import Path
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
+
+SECRET_KEY = os.getenv("SECRET_KEY")
+ALGORITHM = os.getenv("ALGORITHM")
 
 UPLOAD_FOLDER = Path("uploads")
 UPLOAD_FOLDER.mkdir(exist_ok=True)
@@ -20,3 +27,4 @@ MAGIC_BYTES = {
 "image/jpeg": b"\xff\xd8\xff",
 "image/png": b"\x89PNG\r\n\x1a\n",
 }
+

@@ -13,3 +13,7 @@ class UserResponse(SQLModel):
     name : str
     email : str
     created_at : datetime
+
+class LoginUser(SQLModel):
+    email : str
+    password : str

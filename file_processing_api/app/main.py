@@ -9,18 +9,9 @@
 # YES → Save
 # NO  → Reject 
 
-import datetime
-from typing_extensions import Annotated
-import uuid
-from fastapi import Depends, FastAPI, File, HTTPException, UploadFile
-from pathlib import Path
-from PIL import Image
 
+from fastapi import FastAPI
 from fastapi.concurrency import asynccontextmanager
-from pypdf import PdfReader
-from sqlalchemy import create_engine
-from sqlmodel import SQLModel, Field, Session
-
 from app.db.database import create_db_and_tables
 from app.routes import auth, files
 
