@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta, timezone
 import jwt
-from fastapi import APIRouter, HTTPException
+from fastapi.security import OAuth2PasswordRequestForm
+from fastapi import APIRouter, Depends, HTTPException
 from app.core.config import ALGORITHM, SECRET_KEY
 from sqlmodel import select
 from sqlmodel import Session
@@ -34,20 +35,22 @@ async def create_user(user : UserCreate, session : SessionDep): # type: ignore
     return  user_data
 
 
-@router.post("/login")
-async def user_login(user : LoginUser,session : SessionDep): # type: ignore
 
-    existing_user =  session.exec(select(Users).where(Users.email == user.email)).first()
+@router.post("/login")
+async def user_login(session : SessionDep,form_data: OAuth2PasswordRequestForm = Depends()): # type: ignore
+
+    email =  form_data.username
+    existing_user =  session.exec(select(Users).where(Users.email == email)).first()
     
     if not existing_user:
         raise HTTPException(status_code=401,
                             detail = "Invalid email or password")
     
 
-    auth_user = verify_password(user.password, existing_user.password_hash)
+    logged_user = verify_password(form_data.password, existing_user.password_hash)
 
 
-    if not auth_user:
+    if not logged_user:
         raise HTTPException(
             status_code=401,
             detail="Invalid email or password"

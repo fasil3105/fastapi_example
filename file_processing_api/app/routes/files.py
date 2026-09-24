@@ -2,17 +2,21 @@ from pathlib import Path
 from tkinter import Image
 import uuid
 
-from fastapi import HTTPException, UploadFile
+from fastapi import Depends, HTTPException, UploadFile
 from pypdf import PdfReader
 from fastapi import APIRouter
 from app.core.config import ALLOWED_EXTENSION, EXTENSION_TO_MIME, MAGIC_BYTES, MAX_FILE_SIZE, UPLOAD_FOLDER
 from app.db.database import SessionDep
 from app.models.file import FileMetadata
+from app.core.security import get_current_user
+from app.models.users import Users
 
 router = APIRouter()
 
 @router.post("/uploadfile/")
-async def create_upload_file(file : UploadFile, session: SessionDep):
+async def create_upload_file(file : UploadFile, 
+                             session: SessionDep, 
+                             current_user: Users = Depends(get_current_user)):
 
     extension =  Path(file.filename).suffix.lower()
 
@@ -83,6 +87,7 @@ async def create_upload_file(file : UploadFile, session: SessionDep):
             f.write(chunk)
 
             file_metadata = FileMetadata(
+            user_id = current_user.id,
             original_filename=file.filename,
             stored_filename=new_filename,
             file_type=file_type,
@@ -96,6 +101,7 @@ async def create_upload_file(file : UploadFile, session: SessionDep):
             
 
         return {"Allowed": {
+                "user_id" : current_user.id,
                 "File_extension" : extension,
                 "MIME_type" : file_type,
                 "File_Size" : file_size
