@@ -7,7 +7,8 @@ load_dotenv()
 
 SECRET_KEY = os.getenv("SECRET_KEY")
 ALGORITHM = os.getenv("ALGORITHM")
-
+S3_BUCKET_NAME = os.getenv("S3_BUCKET_NAME")
+URL_EXPIRATION = os.getenv("PRESIGNED_URL_EXPIRATION")
 UPLOAD_FOLDER = Path("uploads")
 UPLOAD_FOLDER.mkdir(exist_ok=True)
 
