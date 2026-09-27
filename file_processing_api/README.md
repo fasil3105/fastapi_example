@@ -154,7 +154,41 @@ When an authorized user requests a file download:
 
 # 6. Project Structure
 
-![alt text](docs/Project_structure.png.png)
+
+file_processing_api/
+│
+├── app/
+│   │
+│   ├── core/
+|   |   |__ config.py    
+│   │   ├── security.py
+│   │   └── storage.py
+│   │
+│   ├── db/
+│   │   └── database.py
+│   │
+│   ├── models/
+│   │   ├── users.py
+│   │   └── file.py
+│   │
+│   ├── routes/
+│   │   ├── auth.py
+│   │   └── files.py
+│   │
+│   ├── schemas/
+│   │   ├── user.py
+│   │   └── file.py
+│   │
+│   └── main.py
+│
+├── tests/
+│   └── test_api.py
+│
+├── requirements.txt
+├── .gitignore
+└── README.md
+
+
 ### Core Components
 
 #### `app/core/security.py`
