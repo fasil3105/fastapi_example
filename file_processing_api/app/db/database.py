@@ -8,9 +8,6 @@ from sqlmodel import SQLModel, Session
 DATABASE_URL = "postgresql+psycopg://postgres:F%40sil3105@localhost:5432/file_processing_db"
 engine = create_engine(DATABASE_URL)
 
-with engine.connect() as connection:
-    print("Database connected successfully!")
-
 def create_db_and_tables():
     SQLModel.metadata.create_all(engine)
 
